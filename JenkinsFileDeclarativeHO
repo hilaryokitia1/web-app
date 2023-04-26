@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven 3.9.0'
+    }
+    stages {
+        stage('Cloning') {
+            steps {
+                echo 'Cloning from Github'
+                git 'https://github.com/hilaryokitia1/web-app.git'
+                echo 'Cloning done'
+            }
+        }
+
+        stage('Building') {
+            steps {
+                echo 'Packaging artifact with maven'
+                sh 'mvn package'
+                echo 'Packaging done'
+            }
+        }
+
+        stage('Testing') {
+            steps {
+                echo 'Testing with sonar'
+                sh 'mvn sonar:sonar'
+                echo 'Testing done'
+            }
+        }
+
+        stage('Deployinh to Tomcat') {
+            echo 'Pushing to tomcat'
+            deploy adapters: [tomcat9(credentialsId: 'Tomcat_Cred', path: '', url: 'http://18.206.163.159:2500/manager')], contextPath: 'dockapp3', onFailure: false, war: 'target/*.war'
+            echo 'Done'
+        }
+    }
+}
+
