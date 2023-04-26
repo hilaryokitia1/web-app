@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        maven 'maven 3.9.0'
+        maven 'maven3.9.0'
     }
     stages {
         stage('Cloning') {
@@ -29,9 +29,11 @@ pipeline {
         }
 
         stage('Deployinh to Tomcat') {
-            echo 'Pushing to tomcat'
-            deploy adapters: [tomcat9(credentialsId: 'Tomcat_Cred', path: '', url: 'http://18.206.163.159:2500/manager')], contextPath: 'dockapp3', onFailure: false, war: 'target/*.war'
-            echo 'Done'
+            steps {
+                echo 'Pushing to tomcat'
+                deploy adapters: [tomcat9(credentialsId: 'Tomcat_Cred', path: '', url: 'http://18.206.163.159:2500/manager')], contextPath: 'dockapp3', onFailure: false, war: 'target/*.war'
+                echo 'Done'
+            }
         }
     }
 }
