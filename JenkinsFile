@@ -1,0 +1,23 @@
+node{
+  def MHD = tool name: "maven3.9.0"
+  stage('Cloning'){
+    sh 'echo Cloning from GitHub'
+    git 'https://github.com/hilaryokitia1/web-app.git'
+    sh 'echo Cloning done'
+  }
+  stage('Building'){
+    sh "echo Packaging our artifact with Maven"
+    sh "${MHD}/bin/mvn package"
+    sh "echo Packing done"
+  }
+  stage('Testing'){
+    sh 'echo Testing with Sonarqube'
+    sh "${MHD}/bin/mvn sonar:sonar"
+    sh 'echo Testing done'
+  }
+  stage('Tomcat'){
+    sh 'echo Pushing to Tomcat'
+    deploy adapters: [tomcat9(credentialsId: 'Tomcat_Cred', path: '', url: 'http://18.206.163.159:2500/manager')], contextPath: 'dockapp2', onFailure: false, war: 'target/*.war'
+    sh 'echo Deployment done'
+  }
+}
